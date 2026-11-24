@@ -1,0 +1,3 @@
+# Generate inventory.ini after apply, replacing <PUBLIC_IP> with Terraform output.
+[sentry]
+sentry_vm ansible_host=<PUBLIC_IP> ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/id_ed25519

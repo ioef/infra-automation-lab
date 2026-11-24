@@ -1,0 +1,7 @@
+# Replace these documentation-only addresses with your current public IPv4 CIDR(s).
+# For one address, use /32. Check your current public IP with:
+# curl -4fsS https://checkip.amazonaws.com
+allowed_cidrs = [
+  "203.0.113.10/32",
+  "198.51.100.24/32",
+]

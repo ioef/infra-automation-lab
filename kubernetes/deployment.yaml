@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logging-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logging-app
+  template:
+    metadata:
+      labels:
+        app: logging-app
+    spec:
+      containers:
+        - name: logger
+          image: busybox:1.38
+          command:
+            - /bin/sh
+            - -c
+            - |
+              while true; do
+                echo "$(date -u +"%Y-%m-%dT%H:%M:%SZ") INFO app running" >> /var/log/application.log
+                sleep 5
+              done
+          volumeMounts:
+            - name: logs
+              mountPath: /var/log
+      volumes:
+        - name: logs
+          persistentVolumeClaim:
+            claimName: app-logs-pvc
