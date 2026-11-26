@@ -12,7 +12,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: rotator
-              image: busybox:1.36
+              image: busybox:1.38
               command: ["/bin/sh", "/scripts/rotate_logs.sh"]
               env:
                 - name: LOG_DIR
