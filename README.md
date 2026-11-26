@@ -26,6 +26,10 @@ The [`kubernetes/`](kubernetes/) lab deploys a sample logger with a shared PVC,
 a ConfigMap containing a rotation script, and a CronJob that rotates and
 compresses logs.
 
+### Other 
+On the root level directory a devops.sh script is being provided that allows the automatic installation
+of aws, Terraform and Ansible on Debian and Ubuntu based hosts that will handle the orchestration.
+
 ## Repository layout
 
 ```text
@@ -33,5 +37,6 @@ compresses logs.
 ├── terraform/
 ├── ansible/
 ├── kubernetes/
+├── devops.sh
 └── README.md
 ```
