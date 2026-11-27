@@ -12,8 +12,12 @@ fi
 os_id="${ID:-}"
 os_like="${ID_LIKE:-}"
 
-if [[ "$os_id" != "debian" && "$os_id" != "ubuntu" ]] && [[ ! " $os_like " =~ [[:space:]](debian|ubuntu)[[:space:]] ]]; then
-  echo "Error: Unsupported OS ($os_id). Only Debian and Ubuntu are supported." >&2
+if [[ "$os_id" == "debian" || "$os_id" == "ubuntu" ]] || [[ " $os_like " =~ [[:space:]](debian|ubuntu)[[:space:]] ]]; then
+  os_family="debian"
+elif [[ "$os_id" == "fedora" ]] || [[ " $os_like " =~ [[:space:]]fedora[[:space:]] ]]; then
+  os_family="fedora"
+else
+  echo "Error: Unsupported OS ($os_id). Debian, Ubuntu, and Fedora are supported." >&2
   exit 1
 fi
 echo "Running on $PRETTY_NAME ($os_id)..."
@@ -21,8 +25,12 @@ echo "Running on $PRETTY_NAME ($os_id)..."
 
 echo "=== 1. Installing Prerequisites ==="
 
-sudo apt-get update
-sudo apt-get install -y curl unzip gnupg lsb-release ca-certificates software-properties-common
+if [[ "$os_family" == "debian" ]]; then
+    sudo apt-get update
+    sudo apt-get install -y curl unzip gnupg lsb-release ca-certificates software-properties-common
+else
+    sudo dnf install -y curl unzip gnupg2
+fi
 
 echo "=== 2. Installing AWS CLI v2 ==="
 ARCH=$(uname -m)
@@ -36,19 +44,28 @@ else
 fi
 
 TMP_DIR=$(mktemp -d)
-curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "$TMP_DIR/awscliv2.zip"
+curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-$AWS_ARCH.zip" -o "$TMP_DIR/awscliv2.zip"
 unzip -q "$TMP_DIR/awscliv2.zip" -d "$TMP_DIR"
 sudo "$TMP_DIR/aws/install" --update
 rm -rf "$TMP_DIR"
 
 echo "=== 3. Installing Terraform ==="
-wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor --yes -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-sudo apt-get update -y
-sudo apt-get install -y terraform
+if [[ "$os_family" == "debian" ]]; then
+    curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor --yes -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+    sudo apt-get update -y
+    sudo apt-get install -y terraform
+else
+    sudo curl -fsSL https://rpm.releases.hashicorp.com/fedora/hashicorp.repo -o /etc/yum.repos.d/hashicorp.repo
+    sudo dnf install -y terraform
+fi
 
 echo "=== 4. Installing Ansible ==="
-sudo apt-get install -y ansible
+if [[ "$os_family" == "debian" ]]; then
+    sudo apt-get install -y ansible
+else
+    sudo dnf install -y ansible-core
+fi
 
 echo "=== 5. Verifying Installations ==="
 aws --version

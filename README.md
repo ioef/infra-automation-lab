@@ -28,7 +28,7 @@ compresses logs.
 
 ### Other 
 On the root level directory a devops.sh script is being provided that allows the automatic installation
-of aws, Terraform and Ansible on Debian and Ubuntu based hosts that will handle the orchestration.
+of AWS CLI v2, Terraform, and Ansible on Debian/Ubuntu- and Fedora-based hosts.
 
 ## Repository layout
 
