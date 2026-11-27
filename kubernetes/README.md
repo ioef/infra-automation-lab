@@ -88,7 +88,7 @@ kubernetes/
 3. **Test 5-day retention:**
    Create an archive with a timestamp older than 5 days and run the job again:
    ```bash
-   kubectl exec deploy/logging-app -- sh -c 'touch -d "6 days ago" /var/log/application-20200101T000000Z.log.gz'
+   kubectl exec deploy/logging-app -- touch -t 202601010000 /var/log/application-20200101T000000Z.log.gz
    kubectl create job --from=cronjob/log-rotator test-retention
    kubectl wait --for=condition=complete job/test-retention --timeout=30s
    kubectl logs job/test-retention
