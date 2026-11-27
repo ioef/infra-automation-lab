@@ -11,6 +11,7 @@
           - ca-certificates
           - curl
           - git
+          - python3-debian
         state: present
 
     - name: Create 16G swapfile if missing
@@ -45,7 +46,6 @@
         components: stable
         architectures: amd64
         signed_by: /etc/apt/keyrings/docker.asc
-        install_python_debian: true
         state: present
 
     - name: Install Docker and Compose plugin
